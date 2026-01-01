@@ -4,7 +4,7 @@
 	"VersionName": "1.0",
 	"FriendlyName": "SlateMiniMap",
 	"Description": "Mini Map rendering using Slate Widgets",
-	"Category": "Other",
+	"Category": "UI",
 	"CreatedBy": "MajorT",
 	"CreatedByURL": "",
 	"DocsURL": "",
