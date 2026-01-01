@@ -1,8 +1,8 @@
 ﻿{
 	"FileVersion": 3,
 	"Version": 1,
-	"VersionName": "1.0",
-	"FriendlyName": "SlateMiniMap",
+	"VersionName": "0.1",
+	"FriendlyName": "Slate Mini Map",
 	"Description": "Mini Map rendering using Slate Widgets",
 	"Category": "UI",
 	"CreatedBy": "MajorT",
