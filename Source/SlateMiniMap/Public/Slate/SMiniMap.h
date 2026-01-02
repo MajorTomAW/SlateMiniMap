@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "MiniMapProjection.h"
 #include "Widgets/SLeafWidget.h"
 
 class SMiniMap : public SLeafWidget
@@ -49,7 +50,6 @@ public:
 
 protected:
 	bool GetPlayerLocation(FVector& Location, FRotator& Rotation) const;
-	void UpdateTransform() const;
 	
 	//~ Begin SWidget Interface
 	virtual FVector2d ComputeDesiredSize(float LayoutScaleMultiplier) const override;
@@ -71,7 +71,5 @@ private:
 	FLocalPlayerContext LocalPlayerContext;
 
 	/** Data used for projection. */
-	mutable FBox2D ScreenRect;
-	mutable FTransform2d WorldToScreen;
-	mutable FTransform2d ScreenToWorld;
+	mutable MiniMap::FMiniMapProjectionData MiniMapProjectionData;
 };

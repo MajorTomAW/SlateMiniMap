@@ -31,9 +31,9 @@ public:
 	UPROPERTY(EditAnywhere, Category=Appearance, Getter, Setter, BlueprintSetter="SetMiniMapRadius", BlueprintGetter="GetMiniMapRadius")
 	float MiniMapRadius = 100000.f;
 
-	/** Zoom level on how far to zoom in/out. */
+	/** Zoom level or view distance used to calculate the size of the minimap rect to display. */
 	UPROPERTY(EditAnywhere, Category=Appearance, Getter, Setter, BlueprintSetter="SetZoomLevel", BlueprintGetter="GetZoomLevel")
-	float ZoomLevel = 1.f;
+	float ZoomLevel = 1000.f;
 
 public:
 	/** Sets the ZoomLevel of the mini map. */

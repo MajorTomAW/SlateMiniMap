@@ -7,7 +7,6 @@
 
 
 SMiniMap::SMiniMap()
-	: ScreenRect(ForceInit)
 {
 }
 
@@ -72,24 +71,6 @@ bool SMiniMap::GetPlayerLocation(FVector& Location, FRotator& Rotation) const
 	return false;
 }
 
-void SMiniMap::UpdateTransform() const
-{
-	FTransform2d T, V;
-	FVector Location;
-	FRotator Rotation;
-	if (GetPlayerLocation(Location, Rotation))
-	{
-		const FVector2D PlayerExtent(ZoomLevel.Get());
-
-		T = FTransform2d(1.0, -FVector2D(Location));
-		V = FTransform2d((ScreenRect.GetExtent() / PlayerExtent).GetMin(),
-			FVector2D(ScreenRect.GetSize().X * 0.5f, ScreenRect.GetSize().Y * 0.5f));
-	}
-
-	WorldToScreen = T.Concatenate(V);
-	ScreenToWorld = WorldToScreen.Inverse();
-}
-
 FVector2d SMiniMap::ComputeDesiredSize(float LayoutScaleMultiplier) const
 {
 	if (MiniMapBrush)
@@ -115,9 +96,15 @@ int32 SMiniMap::OnPaint(
 	bool bParentEnabled) const
 {
 	QUICK_SCOPE_CYCLE_COUNTER(STAT_SMiniMap_OnPaint)
-
-	ScreenRect = FBox2D(FVector2D(0.f), AllottedGeometry.GetLocalSize());
-	UpdateTransform();
+	{
+		FVector Location;
+		FRotator Rotation;
+		if (GetPlayerLocation(Location, Rotation))
+		{
+			const FVector2D PlayerExtent(ZoomLevel.Get());
+			MiniMapProjectionData.UpdateProjectionData(Location, PlayerExtent, AllottedGeometry);
+		}
+	}
 
 	LayerId = PaintMiniMap(AllottedGeometry, MyCullingRect, OutDrawElements, ++LayerId);
 	return LayerId;
@@ -144,14 +131,9 @@ int32 SMiniMap::PaintMiniMap(
 	{
 		const float MiniMapHalfRadius = 0.5f * MiniMapWorldRadius.Get();
 		const FBox2D WorldMiniMapBounds = FBox2D(FVector2D(-MiniMapHalfRadius), FVector2D(MiniMapHalfRadius));
-	
-		const FBox2D MiniMapBounds(
-			WorldToScreen.TransformPoint(WorldMiniMapBounds.Min),
-			WorldToScreen.TransformPoint(WorldMiniMapBounds.Max));
-
-		const FPaintGeometry WorldImageGeometry = AllottedGeometry.ToPaintGeometry(
-			MiniMapBounds.GetSize(),
-			FSlateLayoutTransform(MiniMapBounds.Min));
+		const FPaintGeometry WorldImageGeometry = MiniMapProjectionData.MakePaintGeometry_FromWP(
+			WorldMiniMapBounds,
+			AllottedGeometry);
 		
 		FSlateDrawElement::MakeBox(
 		   OutDrawElements,
