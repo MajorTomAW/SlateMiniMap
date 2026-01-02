@@ -21,6 +21,10 @@ public:
 	/** Brush to render the actual mini map.*/
 	UPROPERTY(EditAnywhere, Category=Appearance)
 	FSlateBrush MiniMapBrush;
+
+	/** Additional brushes to render on top of the mini map.*/
+	UPROPERTY(EditAnywhere, Category=Appearance)
+	TArray<FSlateBrush> AdditionalMapBrushes;
 	
 	/** Brush to render the map background. */
 	UPROPERTY(EditAnywhere, Category=Appearance)
@@ -31,11 +35,22 @@ public:
 	UPROPERTY(EditAnywhere, Category=Appearance, Getter, Setter, BlueprintSetter="SetMiniMapRadius", BlueprintGetter="GetMiniMapRadius")
 	float MiniMapRadius = 100000.f;
 
-	/** Zoom level or view distance used to calculate the size of the minimap rect to display. */
+	/** View distance used to calculate the size of the minimap rect to display. */
+	UPROPERTY(EditAnywhere, Category=Appearance, Getter, Setter, BlueprintSetter="SetViewDistance", BlueprintGetter="GetViewDistance")
+	float ViewDistance = 1000.f;
+	
+	/** Zoom level scalar applied to the view distance. */
 	UPROPERTY(EditAnywhere, Category=Appearance, Getter, Setter, BlueprintSetter="SetZoomLevel", BlueprintGetter="GetZoomLevel")
-	float ZoomLevel = 1000.f;
+	float ZoomLevel = 1.f;
 
 public:
+	/** Sets the ViewDistance of the mini map. */
+	UFUNCTION(BlueprintCallable, Category=Widget)
+	virtual void SetViewDistance(float InViewDistance);
+	/** Returns the view distance. */
+	UFUNCTION(BlueprintCallable, Category=Widget)
+	float GetViewDistance() const { return ViewDistance; }
+	
 	/** Sets the ZoomLevel of the mini map. */
 	UFUNCTION(BlueprintCallable, Category=Widget)
 	virtual void SetZoomLevel(float InZoomLevel);

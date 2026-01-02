@@ -16,13 +16,16 @@ public:
 		, _BackgroundBrush(nullptr)
 		, _MiniMapWorldRadius(10000.f)
 		, _ZoomLevel(1.f)
+		, _ViewDistance(1000.f)
 		{
 		}
 		SLATE_ARGUMENT(const FSlateBrush*, MiniMapBrush)
+		SLATE_ARGUMENT(const TArray<FSlateBrush>*, AdditionalMapBrushes)
 		SLATE_ARGUMENT(const FSlateBrush*, BackgroundBrush)
 		SLATE_ARGUMENT(FSlateFontInfo, FontInfo)
 		SLATE_ATTRIBUTE(float, MiniMapWorldRadius)
 		SLATE_ATTRIBUTE(float, ZoomLevel)
+		SLATE_ATTRIBUTE(float, ViewDistance)
 	SLATE_END_ARGS()
 
 	SMiniMap();
@@ -32,6 +35,9 @@ public:
 
 	/** Sets the zoom level. */
 	void SetZoomLevel(TAttribute<float> InZoomLevel);
+
+	/** Sets the view distance. */
+	void SetViewDistance(TAttribute<float> InViewDistance);
 
 	/** Sets the mini map radius. */
 	void SetMiniMapRadius(TAttribute<float> InMiniMapRadius);
@@ -62,8 +68,10 @@ protected:
 private:
 	/** Passed-in args. */
 	TAttribute<float> MiniMapWorldRadius;
+	TAttribute<float> ViewDistance;
 	TAttribute<float> ZoomLevel;
 	const FSlateBrush* MiniMapBrush = nullptr;
+	const TArray<FSlateBrush>* AdditionalMapBrushes;
 	const FSlateBrush* BackgroundBrush = nullptr;
 	FSlateFontInfo DirectionalLettersFontInfo;
 

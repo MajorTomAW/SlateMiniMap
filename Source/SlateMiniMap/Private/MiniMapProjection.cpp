@@ -44,6 +44,11 @@ bool MiniMap::FMiniMapProjectionData::IsWithinScreenRect(const FVector2D& PointI
 	return ScreenRect.IsInside(PointInScreenSpace);
 }
 
+bool MiniMap::FMiniMapProjectionData::IsWithinScreenRect(const FBox2D& ScreenBounds) const
+{
+	return ScreenRect.Overlap(ScreenBounds).bIsValid;
+}
+
 FPaintGeometry MiniMap::FMiniMapProjectionData::MakePaintGeometry_FromWP(
 	const FBox2D& WorldBounds,
 	const FGeometry& AllottedGeometry) const

@@ -17,8 +17,10 @@ void SMiniMap::Construct(
 {
 	BackgroundBrush = InArgs._BackgroundBrush;
 	MiniMapBrush = InArgs._MiniMapBrush;
+	AdditionalMapBrushes = InArgs._AdditionalMapBrushes;
 	MiniMapWorldRadius = InArgs._MiniMapWorldRadius;
 	ZoomLevel = InArgs._ZoomLevel;
+	ViewDistance = InArgs._ViewDistance;
 	DirectionalLettersFontInfo = InArgs._FontInfo;
 
 	LocalPlayerContext = InLocalPlayerContext;
@@ -36,6 +38,11 @@ void SMiniMap::Construct(
 void SMiniMap::SetZoomLevel(TAttribute<float> InZoomLevel)
 {
 	ZoomLevel = InZoomLevel;
+}
+
+void SMiniMap::SetViewDistance(TAttribute<float> InViewDistance)
+{
+	ViewDistance = InViewDistance;
 }
 
 void SMiniMap::SetMiniMapRadius(TAttribute<float> InMiniMapRadius)
@@ -101,7 +108,7 @@ int32 SMiniMap::OnPaint(
 		FRotator Rotation;
 		if (GetPlayerLocation(Location, Rotation))
 		{
-			const FVector2D PlayerExtent(ZoomLevel.Get());
+			const FVector2D PlayerExtent(ViewDistance.Get() * ZoomLevel.Get());
 			MiniMapProjectionData.UpdateProjectionData(Location, PlayerExtent, AllottedGeometry);
 		}
 	}
@@ -127,20 +134,43 @@ int32 SMiniMap::PaintMiniMap(
 			   BackgroundBrush->TintColor.GetSpecifiedColor());
 	}
 
+	const float MiniMapHalfRadius = 0.5f * MiniMapWorldRadius.Get();
+	const float MiniMapRadiusRatio = MiniMapHalfRadius / MiniMapBrush->GetImageSize().X;
+
+	// Minimap is background, any other should be on top of it
 	if (MiniMapBrush)
 	{
-		const float MiniMapHalfRadius = 0.5f * MiniMapWorldRadius.Get();
 		const FBox2D WorldMiniMapBounds = FBox2D(FVector2D(-MiniMapHalfRadius), FVector2D(MiniMapHalfRadius));
 		const FPaintGeometry WorldImageGeometry = MiniMapProjectionData.MakePaintGeometry_FromWP(
 			WorldMiniMapBounds,
 			AllottedGeometry);
 		
 		FSlateDrawElement::MakeBox(
-		   OutDrawElements,
-		   ++LayerId,
-		   WorldImageGeometry,
-		   MiniMapBrush);
+		  OutDrawElements,
+		  ++LayerId,
+		  WorldImageGeometry,
+		  MiniMapBrush);
 	}
+
+	if (AdditionalMapBrushes)
+	{
+		for (FSlateBrush Brush : *AdditionalMapBrushes)
+		{
+			const FBox2D WorldMiniMapBounds = FBox2D(
+				FVector2D(-MiniMapRadiusRatio * Brush.GetImageSize().X),
+				FVector2D(MiniMapRadiusRatio * Brush.GetImageSize().X));
+			const FPaintGeometry WorldImageGeometry = MiniMapProjectionData.MakePaintGeometry_FromWP(
+				WorldMiniMapBounds,
+				AllottedGeometry);
+			
+			FSlateDrawElement::MakeBox(
+			  OutDrawElements,
+			  ++LayerId,
+			  WorldImageGeometry,
+			  &Brush);
+		}
+	}
+	
 
 	return LayerId;
 }

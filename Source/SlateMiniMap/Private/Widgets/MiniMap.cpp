@@ -13,6 +13,15 @@ UMiniMap::UMiniMap(const FObjectInitializer& ObjectInitializer)
 	UWidget::SetVisibility(ESlateVisibility::HitTestInvisible);
 }
 
+void UMiniMap::SetViewDistance(float InViewDistance)
+{
+	ViewDistance = InViewDistance;
+	if (MyMiniMap.IsValid())
+	{
+		MyMiniMap->SetViewDistance(ViewDistance);
+	}
+}
+
 void UMiniMap::SetZoomLevel(float InZoomLevel)
 {
 	ZoomLevel = InZoomLevel;
@@ -66,16 +75,39 @@ TSharedRef<SWidget> UMiniMap::RebuildWidget()
 		{
 			MyMiniMap = SNew(SMiniMap, FLocalPlayerContext(LocalPlayer))
 				.MiniMapBrush(&MiniMapBrush)
+				.AdditionalMapBrushes(&AdditionalMapBrushes)
 				.BackgroundBrush(&BackgroundBrush)
 				.MiniMapWorldRadius(MiniMapRadius)
-				.ZoomLevel(ZoomLevel);
+				.ZoomLevel(ZoomLevel)
+				.ViewDistance(ViewDistance);
 			return MyMiniMap.ToSharedRef();
 		}
 	}
-	
+
 	// If we're in the editor, we don't want to create the minimap canvas
-	// Give it a trivial box, NullWidget isn't safe to use from a UWidget
-	return SNew(SImage).Image(&MiniMapBrush);
+	// Give it a trivial preview of what the minimap might look like in-game
+	if (AdditionalMapBrushes.IsEmpty())
+	{
+		return SNew(SImage).Image(&MiniMapBrush);
+	}
+	else
+	{
+		TSharedRef<SOverlay> Overlay = SNew(SOverlay)
+			+ SOverlay::Slot()
+			[
+				SNew(SImage).Image(&MiniMapBrush)
+			];
+
+		for (const FSlateBrush& Brush : AdditionalMapBrushes)
+		{
+			Overlay->AddSlot()
+			[
+				SNew(SImage).Image(&Brush)
+			];
+		}
+
+		return Overlay;
+	}
 }
 
 #if WITH_EDITOR

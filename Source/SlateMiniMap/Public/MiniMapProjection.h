@@ -21,6 +21,7 @@ namespace MiniMap
 		FVector2D WorldToScreen(const FVector& PointInWorldSpace) const;
 		FBox2D MakeScreenBounds(const FBox2D& WorldBounds) const;
 		bool IsWithinScreenRect(const FVector2D& PointInScreenSpace) const;
+		bool IsWithinScreenRect(const FBox2D& ScreenBounds) const;
 		FPaintGeometry MakePaintGeometry_FromSP(const FBox2D& ScreenBounds, const FGeometry& AllottedGeometry) const;
 		FPaintGeometry MakePaintGeometry_FromWP(const FBox2D& WorldBounds, const FGeometry& AllottedGeometry) const;
 
