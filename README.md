@@ -9,3 +9,5 @@ Whereas the radius should correspond to the Ortho Width of the Scene Capture tha
 
 
 ![Aufzeichnung 2026-01-06 181152](https://github.com/user-attachments/assets/37dc5a13-0027-42c8-942e-a185989e61f2)
+
+https://dev.epicgames.com/community/learning/tutorials/alEo/unreal-engine-scrolling-mini-map-widget-using-slate
